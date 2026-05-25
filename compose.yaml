@@ -148,7 +148,8 @@ services:
       - 8090:8090 # qbittorrent ui
       - 9696:9696 # prowlarr ui
     networks:
-      - arr-net
+      arr-net:
+        ipv4_address: 10.10.10.10
     extra_hosts:
       # use static ips for non-vpn'd services, map hostnames here (e.g. for prowlarr)
       - sonarr=10.10.10.2
