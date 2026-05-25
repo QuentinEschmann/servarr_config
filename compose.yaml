@@ -1,0 +1,159 @@
+# common env config for most services
+x-base-env: &base-env
+  TZ: ${TZ}
+  PUID: ${PUID}
+  PGID: ${PGID}
+
+
+x-vpn-service: &vpn-service
+  network_mode: service:vpn  # implies depends_on for vpn
+  restart: always
+  healthcheck:
+    # appears that services behind the vpn lose access to the network after it reconnects
+    # if we can't ping the vpn, then it probably restarted/reconnected
+    # exit the container and let it restart.
+    test: ping -c 2 vpn || kill 1
+    interval: 30s
+    timeout: 2s
+    retries: 1
+    start_period: 10s  # wait a little for the vpn to reconnect first
+
+
+# common config for the non-vpn'd *arr servicers
+x-arr-service: &arr-service
+  environment:
+    <<: *base-env
+  restart: unless-stopped
+
+
+
+networks:
+  arr-net:
+    ipam:
+      config:
+       - subnet: 172.0.0.0/16
+
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    restart: unless-stopped
+    environment:
+      <<: *base-env
+    ports:
+      - 8096:8096/tcp
+      - 7359:7359/udp
+    volumes:
+      - ./config/jellyfin:/config
+      - ./cache:/cache
+      - type: bind
+        source: /media/films
+        target: /films
+      - type: bind
+        source: /media/series
+        target: /series
+    networks:
+      - arr-net
+
+
+
+    # sonarr
+  Sonarr:
+      image: ghcr.io/hotio/sonarr
+      constainer-name: sonarr
+      hostname: sonarr
+      <<: *arr-service
+      logging:
+        driver: json-file
+      ports: 
+        - 8989:8989
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - ./config/sonarr:/config
+        - ./data:/data
+      networks:
+        arr-net:
+          ipv4_address: 192.168.1.198
+
+
+  Radarr:
+    image: ghcr.io/hotio/radarr
+    constainer-name: radarr
+    hostname: radarr
+    <<: *arr-service
+    logging:
+      driver: json-file
+    ports: 
+      - 6767:6767 ## ui port
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/radarr:/config
+      - ./data:/data
+    networks:
+      arr-net:
+        ipv4_address: 192.168.1.199
+
+
+  Prowlarr:
+    image: ghcr.io/hotio/prowlarr
+    constainer-name: prowlarr
+    <<: *vpn-service
+    logging:
+      driver: json-file
+    environment:
+        <<: *base-env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/radarr:/config
+      - ./data:/data
+    networks:
+      - arr-net
+
+  
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    <<: *vpn-service
+    environment:
+      <<: *base-env
+      UMASK_SET: 022
+      WEBUI_PORT: 8090
+      TORRENTING_PORT: ${VPN_FORWARDED_PORT}
+    volumes:
+        - ./config/qbittorrent:/config
+        - ./data:/data
+
+
+
+
+  vpn:
+    image: qmcgaw/gluetun:v3.39
+    container_name: vpn
+    hostname: vpn
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      TZ: ${TZ}
+      VPN_SERVICE_PROVIDER: protonvpn
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+      FIREWALL_VPN_INPUT_PORTS: ${VPN_FORWARDED_PORT}
+      HEALTH_VPN_DURATION_INITIAL: 30s  # slow down healthchecks
+      HEALTH_SUCCESS_WAIT_DURATION: 30s
+      DOT: 'off'  # disable DNS over TLS - caused a bunch of timeouts, leading to restarts
+    volumes:
+      - ./config/wireguard/config:/config
+    ports:
+      # expose ports for services behind vpn
+      - 8090:8090 # qbittorrent ui
+      - 9696:9696 # prowlarr ui
+    networks:
+      - arr-net
+    extra_hosts:
+      # use static ips for non-vpn'd services, map hostnames here (e.g. for prowlarr)
+      - sonarr=192.168.1.199
+      - radarr=192.168.1.198
+    restart: always
