@@ -74,7 +74,7 @@ services:
         - ./data:/data
       networks:
         arr-net:
-          ipv4_address: 10.10.10.3
+          ipv4_address: 10.10.10.2
 
 
   Radarr:
@@ -92,7 +92,7 @@ services:
       - ./data:/data
     networks:
       arr-net:
-        ipv4_address: 10.10.10.2
+        ipv4_address: 10.10.10.3
 
 
   Prowlarr:
@@ -142,6 +142,7 @@ services:
       HEALTH_VPN_DURATION_INITIAL: 30s  # slow down healthchecks
       HEALTH_SUCCESS_WAIT_DURATION: 30s
       DOT: 'off'  # disable DNS over TLS - caused a bunch of timeouts, leading to restarts
+      DOH: 'off'
       DNS_SERVER: 8.8.8.8
     volumes:
       - ./config/wireguard/config:/config
