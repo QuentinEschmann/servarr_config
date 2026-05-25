@@ -139,11 +139,8 @@ services:
       VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
       FIREWALL_VPN_INPUT_PORTS: ${VPN_FORWARDED_PORT}
-      HEALTH_VPN_DURATION_INITIAL: 30s  # slow down healthchecks
       HEALTH_SUCCESS_WAIT_DURATION: 30s
-      DOT: 'off'  # disable DNS over TLS - caused a bunch of timeouts, leading to restarts
-      DOH: 'off'
-      DNS_SERVER: 8.8.8.8
+      DNS_ADDRESS: 8.8.8.8
     volumes:
       - ./config/wireguard/config:/config
     ports:
