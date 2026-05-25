@@ -117,7 +117,6 @@ services:
       <<: *base-env
       UMASK_SET: 022
       WEBUI_PORT: 8090
-      TORRENTING_PORT: ${VPN_FORWARDED_PORT}
     volumes:
         - ./config/qbittorrent:/config
         - /data:/data
