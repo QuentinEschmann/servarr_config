@@ -142,7 +142,7 @@ services:
       HEALTH_VPN_DURATION_INITIAL: 30s  # slow down healthchecks
       HEALTH_SUCCESS_WAIT_DURATION: 30s
       DOT: 'off'  # disable DNS over TLS - caused a bunch of timeouts, leading to restarts
-      DNS_SERVER: 192.168.1.166
+      DNS_SERVER: 8.8.8.8
     volumes:
       - ./config/wireguard/config:/config
     ports:
