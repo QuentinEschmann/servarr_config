@@ -71,7 +71,7 @@ services:
       volumes:
         - /etc/localtime:/etc/localtime:ro
         - ./config/sonarr:/config
-        - ./data:/data
+        - /data:/data
       networks:
         arr-net:
           ipv4_address: 10.10.10.2
@@ -89,7 +89,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/radarr:/config
-      - ./data:/data
+      - /data:/data
     networks:
       arr-net:
         ipv4_address: 10.10.10.3
@@ -106,7 +106,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/prowlarr:/config
-      - ./data:/data
+      - /data:/data
 
   
   qbittorrent:
@@ -120,7 +120,7 @@ services:
       TORRENTING_PORT: ${VPN_FORWARDED_PORT}
     volumes:
         - ./config/qbittorrent:/config
-        - ./data:/data
+        - /data:/data
 
 
 
