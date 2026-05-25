@@ -153,6 +153,6 @@ services:
       - arr-net
     extra_hosts:
       # use static ips for non-vpn'd services, map hostnames here (e.g. for prowlarr)
-      - sonarr=172.16.0.2
-      - radarr=172.16.0.1
+      - sonarr=10.10.10.2
+      - radarr=10.10.10.1
     restart: always
