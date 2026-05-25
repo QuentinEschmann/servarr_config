@@ -31,7 +31,7 @@ networks:
   arr-net:
     ipam:
       config:
-       - subnet: 172.0.0.0/16
+       - subnet: 172.16.0.0/16
 
 
 services:
@@ -61,7 +61,7 @@ services:
     # sonarr
   Sonarr:
       image: ghcr.io/hotio/sonarr
-      constainer-name: sonarr
+      container_name: sonarr
       hostname: sonarr
       <<: *arr-service
       logging:
@@ -74,12 +74,12 @@ services:
         - ./data:/data
       networks:
         arr-net:
-          ipv4_address: 192.168.1.198
+          ipv4_address: 172.16.0.2
 
 
   Radarr:
     image: ghcr.io/hotio/radarr
-    constainer-name: radarr
+    container_name: radarr
     hostname: radarr
     <<: *arr-service
     logging:
@@ -92,12 +92,12 @@ services:
       - ./data:/data
     networks:
       arr-net:
-        ipv4_address: 192.168.1.199
+        ipv4_address: 172.16.0.1
 
 
   Prowlarr:
     image: ghcr.io/hotio/prowlarr
-    constainer-name: prowlarr
+    container_name: prowlarr
     <<: *vpn-service
     logging:
       driver: json-file
@@ -105,10 +105,8 @@ services:
         <<: *base-env
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./config/radarr:/config
+      - ./config/prowlarr:/config
       - ./data:/data
-    networks:
-      - arr-net
 
   
   qbittorrent:
@@ -154,6 +152,6 @@ services:
       - arr-net
     extra_hosts:
       # use static ips for non-vpn'd services, map hostnames here (e.g. for prowlarr)
-      - sonarr=192.168.1.199
-      - radarr=192.168.1.198
+      - sonarr= 172.16.0.1
+      - radarr= 172.16.0.2
     restart: always
