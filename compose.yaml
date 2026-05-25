@@ -85,7 +85,7 @@ services:
     logging:
       driver: json-file
     ports: 
-      - 6767:6767 ## ui port
+      - 7878:7878 ## ui port
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/radarr:/config
@@ -152,6 +152,6 @@ services:
       - arr-net
     extra_hosts:
       # use static ips for non-vpn'd services, map hostnames here (e.g. for prowlarr)
-      - sonarr= 172.16.0.1
-      - radarr= 172.16.0.2
+      - sonarr=172.16.0.2
+      - radarr=172.16.0.1
     restart: always
