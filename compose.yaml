@@ -48,10 +48,10 @@ services:
       - ./config/jellyfin:/config
       - ./cache:/cache
       - type: bind
-        source: /media/films
+        source: /data/media/movies
         target: /films
       - type: bind
-        source: /media/series
+        source: /data/media/tv
         target: /series
     networks:
       - arr-net
