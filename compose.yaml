@@ -94,6 +94,24 @@ services:
       arr-net:
         ipv4_address: 10.10.10.3
 
+  
+  # Dispatcharr
+  dispatcharr:
+    image: ghcr.io/dispatcharr/dispatcharr:latest
+    hostname: dispatcharr
+    restart: unless-stopped
+    container_name: dispatcharr
+    <<: *arr-service
+    ports:
+      - 9191:9191
+    volumes:
+      - dispatcharr_data:/data
+    environment:
+      - DISPATCHARR_ENV=aio
+      - REDIS_HOST=localhost
+      - CELERY_BROKER_URL=redis://localhost:6379/0
+      - DISPATCHARR_LOG_LEVEL=info
+
 
   Prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
