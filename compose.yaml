@@ -38,7 +38,7 @@ networks:
 volumes:
   dispatcharr_data:
 
-  
+
 
 services:
   jellyfin:
@@ -125,7 +125,10 @@ services:
     init: true
     container_name: seerr
     hostname: seerr
-    <<: *arr-service
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=${TZ}
+      - PORT=5055
     ports:
       - 5055:5055
     volumes:
