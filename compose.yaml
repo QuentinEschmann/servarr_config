@@ -34,6 +34,12 @@ networks:
        - subnet: 10.10.10.0/24
 
 
+
+volumes:
+  dispatcharr_data:
+
+  
+
 services:
   jellyfin:
     image: ghcr.io/jellyfin/jellyfin:latest
