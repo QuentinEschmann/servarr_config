@@ -119,6 +119,7 @@ services:
       - DISPATCHARR_LOG_LEVEL=info
 
 
+
   # seerr
   seerr:
     image: ghcr.io/seerr-team/seerr:latest
@@ -178,6 +179,9 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+      - net.ipv6.conf.default.disable_ipv6=1
     environment:
       TZ: ${TZ}
       VPN_SERVICE_PROVIDER: protonvpn
